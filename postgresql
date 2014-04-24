@@ -1,0 +1,30 @@
+#!/bin/bash
+BACKUP_PATH=""
+LOG_PATH=""
+DATABASES=""
+DATE=`date +%G-%m-%d_%H.%M`
+PORT=5432
+USER=
+RECIPIENT=
+
+for DATABASE in $DATABASES
+do
+
+  FILE_NAME=$DATABASE-$DATE.dmp
+
+  pg_dump -U $USER -h localhost -p $PORT -F c -b -v -f /tmp/$FILE_NAME $DATABASE > $LOG_PATH/$DATABASE-$DATE.log 2> $LOG_PATH/error-$DATABASE-$DATE.log
+  bzip2 /tmp/$FILE_NAME
+
+  if [ $RECIPIENT ]; then
+
+    gpg --output $BACKUP_PATH/$FILE_NAME.bz2.gpg --encrypt --recipient $RECIPIENT /tmp/$FILE_NAME.bz2
+    rm /tmp/$FILE_NAME.bz2
+
+  else
+
+    mv /tmp/$FILE_NAME.bz2 $BACKUP_PATH
+
+  fi
+
+done;
+

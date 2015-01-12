@@ -21,6 +21,7 @@ BACKUP_PATH=""
 LOG_PATH=""
 DATABASES=""
 DATE=`date +%G-%m-%d_%H.%M`
+HOST=""
 PORT=5432
 USER=
 RECIPIENT=
@@ -30,7 +31,7 @@ do
 
   FILE_NAME=$DATABASE-$DATE.dmp
 
-  pg_dump -U $USER -h localhost -p $PORT -F c -b -v -f /tmp/$FILE_NAME $DATABASE > $LOG_PATH/$DATABASE-$DATE.log 2> $LOG_PATH/error-$DATABASE-$DATE.log
+  pg_dump -U $USER -h $HOST -p $PORT -F c -b -v -f /tmp/$FILE_NAME $DATABASE > $LOG_PATH/$DATABASE-$DATE.log 2> $LOG_PATH/error-$DATABASE-$DATE.log
   bzip2 /tmp/$FILE_NAME
 
   if [ $RECIPIENT ]; then
